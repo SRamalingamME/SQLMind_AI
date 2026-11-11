@@ -1,7 +1,10 @@
 streamlit
+pandas
 sqlalchemy
 psycopg2-binary
-groq
-pandas
 chromadb
+sentence-transformers
+groq
 pydantic
+requests
+python-dotenv
