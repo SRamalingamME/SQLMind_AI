@@ -1,12 +1,14 @@
-from src.execution_engine import execute_with_self_correction
-import streamlit as st
-import pandas as pd
 import sys
 from pathlib import Path
+import streamlit as st
+import pandas as pd
 
 # Ensure project root is in path
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+root_dir = Path(__file__).resolve().parent
+if str(root_dir) not in sys.path:
+    sys.path.append(str(root_dir))
 
+from src.execution_engine import execute_with_self_correction
 
 # Page Configuration
 st.set_page_config(
@@ -19,7 +21,7 @@ st.set_page_config(
 with st.sidebar:
     st.header("⚙️ System Architecture")
     st.markdown("""
-    - **LLM Engine:** Local `phi3` via Ollama
+    - **LLM Engine:** Groq Cloud / Local LLM
     - **Vector Store:** ChromaDB (`all-MiniLM-L6-v2`)
     - **Database:** PostgreSQL (Neon Cloud)
     - **Features:** Automated Schema Reflection & Self-Correction Loop
