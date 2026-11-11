@@ -6,7 +6,7 @@ from pathlib import Path
 # Ensure project root is in path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from src.execution_engine import execute_with_self_correction
+from execution_engine import execute_with_self_correction
 
 # Page Configuration
 st.set_page_config(

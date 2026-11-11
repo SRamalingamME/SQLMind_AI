@@ -7,7 +7,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 import pandas as pd
 from sqlalchemy import create_engine, text
 from config.settings import settings
-from src.llm_engine import generate_sql, OLLAMA_API_URL, MODEL_NAME
+from llm_engine import generate_sql, OLLAMA_API_URL, MODEL_NAME
 import requests
 
 def execute_sql_query(sql_query: str) -> tuple[pd.DataFrame | None, str | None]:
