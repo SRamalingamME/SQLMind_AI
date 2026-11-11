@@ -15,6 +15,9 @@ OLLAMA_API_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "phi3"
 GROQ_MODEL = "openai/gpt-oss-20b"
 
+# Export MODEL_NAME alias for compatibility with execution_engine imports
+MODEL_NAME = GROQ_MODEL
+
 def get_groq_api_key():
     """Safely fetch Groq API key from Streamlit secrets or environment variables."""
     try:
