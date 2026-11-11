@@ -1,13 +1,13 @@
 import sys
 from pathlib import Path
-import streamlit as st
-import pandas as pd
 
-# Ensure project root is in path
+# Ensure project root is in sys.path BEFORE any src imports
 root_dir = Path(__file__).resolve().parent
 if str(root_dir) not in sys.path:
-    sys.path.append(str(root_dir))
+    sys.path.insert(0, str(root_dir))
 
+import streamlit as st
+import pandas as pd
 from src.execution_engine import execute_with_self_correction
 
 # Page Configuration
@@ -51,18 +51,15 @@ for message in st.session_state.messages:
 
 # User Chat Input Box
 if user_query := st.chat_input("Ask a question about your e-commerce database..."):
-    # Append and display user message
     st.session_state.messages.append({"role": "user", "content": user_query})
     with st.chat_message("user"):
         st.markdown(user_query)
 
-    # Check for casual greetings before hitting the pipeline
     if user_query.strip().lower() in ["hi", "hello", "hey"]:
         response_text = "Hello! I'm SQLMind AI. Ask me a question about your e-commerce database (e.g., 'List all customers living in Coimbatore')."
         with st.chat_message("assistant"):
             st.markdown(response_text)
         
-        # Save greeting response to history
         st.session_state.messages.append({
             "role": "assistant",
             "content": response_text,
@@ -70,18 +67,15 @@ if user_query := st.chat_input("Ask a question about your e-commerce database...
             "df": pd.DataFrame()
         })
     else:
-        # Build contextual query if there is conversation history
         full_prompt = user_query
         if len(st.session_state.messages) > 1:
             prev_user_msgs = [m["content"] for m in st.session_state.messages if m["role"] == "user"]
             if len(prev_user_msgs) > 1:
                 full_prompt = f"Previous context: {prev_user_msgs[-2]}. Current question: {user_query}"
 
-        # Generate Assistant Response
         with st.chat_message("assistant"):
             with st.spinner("Reflecting schema, generating SQL, and running self-correction loop..."):
                 try:
-                    # Call backend pipeline with augmented prompt context
                     final_sql, results_df = execute_with_self_correction(full_prompt)
                     
                     response_text = "Here is the executable SQL query and the results fetched from your database:"
@@ -93,7 +87,6 @@ if user_query := st.chat_input("Ask a question about your e-commerce database...
                     else:
                         st.info("The query executed successfully, but returned 0 rows.")
                     
-                    # Save assistant response to history
                     st.session_state.messages.append({
                         "role": "assistant",
                         "content": response_text,
