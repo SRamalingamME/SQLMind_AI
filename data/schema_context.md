@@ -37,11 +37,10 @@ The database contains the following relational tables for an e-commerce platform
 
 ---
 
-## Table: `products`
-**Columns:**
+### Table: products
 - `product_id` (Integer, Primary Key)
 - `product_name` (String)
-- `category` (String) -> **Note: This is a direct text column containing category names like 'Electronics' or 'Furniture'. Do NOT attempt to join with a separate categories table.**
+- `category` (String) - *Direct text column containing values like 'Electronics' or 'Furniture'. Do not use a separate categories table.*
 - `unit_price` (Float)
 
 ---
