@@ -1,10 +1,17 @@
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+
+# Load .env variables first
+load_dotenv()
+
 from sqlalchemy import create_engine, Column, Integer, String, Float, Date, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker
-from config.settings import settings
 
-# Database Connection String using Neon cloud URL from settings
-engine = create_engine(settings.DATABASE_URL)
+# Get DATABASE_URL directly from environment variables
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 
