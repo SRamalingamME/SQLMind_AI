@@ -4,6 +4,12 @@ from pathlib import Path
 # Add project root directory to Python path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
+from dotenv import load_dotenv
+import os
+
+# Load .env variables first
+load_dotenv()
+
 import chromadb
 from chromadb.utils import embedding_functions
 from src.reflect_schema import reflect_database_schema
@@ -45,6 +51,10 @@ def ingest_schema_chunks():
         cols_desc = ", ".join([f"{col['name']} ({col['type']})" for col in details["columns"]])
         chunk_text = f"Table name: {table_name}. Columns: {cols_desc}."
         
+        # Add explicit guardrail instruction for the products table
+        if table_name == "products":
+            chunk_text += " NOTE: 'category' is a direct text column in this products table (e.g., 'Electronics', 'Furniture'). There is NO separate categories table. Do not attempt to JOIN with a categories table."
+
         if details["foreign_keys"]:
             fk_desc = "; ".join([
                 f"FK {', '.join(fk['constrained_columns'])} connects to {fk['referred_table']}({', '.join(fk['referred_columns'])})"

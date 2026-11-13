@@ -4,16 +4,21 @@ from pathlib import Path
 # Add project root directory to Python path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from config.settings import settings
-from sqlalchemy import create_engine, inspect
+from dotenv import load_dotenv
+import os
 
-import json
+# Load .env variables first
+load_dotenv()
+
 from sqlalchemy import create_engine, inspect
-from config.settings import settings
+import json
+
+# Get DATABASE_URL directly from environment
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 def reflect_database_schema() -> dict:
     """Connects to PostgreSQL and extracts table definitions, columns, types, and foreign keys."""
-    engine = create_engine(settings.DATABASE_URL)
+    engine = create_engine(DATABASE_URL)
     inspector = inspect(engine)
     
     schema_metadata = {}
@@ -46,12 +51,17 @@ def reflect_database_schema() -> dict:
     return schema_metadata
 
 def assemble_llm_context(schema_metadata: dict) -> str:
-    """Transforms raw schema metadata into a clean Markdown context string for the LLM."""
+    """Transforms raw schema metadata into a clean Markdown context string for the LLM with explicit guardrails."""
     markdown_context = "# Database Schema Context\n\n"
     markdown_context += "The database contains the following relational tables for an e-commerce platform:\n\n"
     
     for table_name, details in schema_metadata.items():
         markdown_context += f"## Table: `{table_name}`\n"
+        
+        # Add explicit guardrail instruction for the products table
+        if table_name == "products":
+            markdown_context += "> **CRITICAL NOTE:** `'category'` is a direct text column inside this products table (containing values like 'Electronics', 'Furniture'). There is **NO** separate `categories` relational table. Do **NOT** attempt to JOIN with a categories table.\n\n"
+
         markdown_context += "**Columns:**\n"
         for col in details["columns"]:
             null_str = "NULL" if col["nullable"] else "NOT NULL"
@@ -78,7 +88,7 @@ if __name__ == "__main__":
     print("\n=== GENERATED LLM CONTEXT ===")
     print(llm_context)
     
-    # Optionally save context to file for inspection
+    # Save context to file for inspection and RAG usage
     with open("data/schema_context.md", "w", encoding="utf-8") as f:
         f.write(llm_context)
     print("Schema context successfully saved to data/schema_context.md!")

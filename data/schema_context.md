@@ -37,11 +37,14 @@ The database contains the following relational tables for an e-commerce platform
 
 ---
 
-### Table: products
-- `product_id` (Integer, Primary Key)
-- `product_name` (String)
-- `category` (String) - *Direct text column containing values like 'Electronics' or 'Furniture'. Do not use a separate categories table.*
-- `unit_price` (Float)
+## Table: `products`
+> **CRITICAL NOTE:** `'category'` is a direct text column inside this products table (containing values like 'Electronics', 'Furniture'). There is **NO** separate `categories` relational table. Do **NOT** attempt to JOIN with a categories table.
+
+**Columns:**
+- `product_id` (INTEGER) - NOT NULL
+- `product_name` (VARCHAR) - NOT NULL
+- `category` (VARCHAR) - NULL
+- `unit_price` (DOUBLE PRECISION) - NULL
 
 ---
 
