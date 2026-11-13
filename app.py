@@ -9,6 +9,7 @@ if str(root_dir) not in sys.path:
 import streamlit as st
 import pandas as pd
 from src.execution_engine import execute_with_self_correction
+from src.rag_engine import ingest_schema_chunks
 
 # Page Configuration
 st.set_page_config(
@@ -16,6 +17,16 @@ st.set_page_config(
     page_icon="🤖",
     layout="wide"
 )
+
+# Auto-initialize/seed ChromaDB vector store on cold start if missing
+@st.cache_resource
+def initialize_vector_store_once():
+    try:
+        ingest_schema_chunks()
+    except Exception as e:
+        print(f"Vector store auto-initialization note: {e}")
+
+initialize_vector_store_once()
 
 # Sidebar Information
 with st.sidebar:
